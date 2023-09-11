@@ -1,0 +1,732 @@
+﻿@inject ILayoutService layoutService
+@{
+    IEnumerable<BasketVM> basketVMs = await layoutService.GetBasketAsync();
+    IEnumerable<Category> categories = await layoutService.GetCategoriesAsync();
+    Dictionary<string,string> settings = await layoutService.GetSettingsAsync();
+}
+
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Allup - Electronics Responsive eCommerce HTML Template.</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--====== Favicon Icon ======-->
+    <link rel="shortcut icon" href="~/assets/images/favicon.png" type="image/png">
+
+    <!--===== Vendor CSS (Bootstrap & Icon Font) =====-->
+    <link rel="stylesheet" href="~/assets/css/plugins/bootstrap.min.css">
+    <link rel="stylesheet" href="~/assets/css/plugins/ionicons.min.css">
+    <link rel="stylesheet" href="~/assets/css/plugins/fontawesome.min.css">
+
+    <!--===== Plugins CSS (All Plugins Files) =====-->
+    <link rel="stylesheet" href="~/assets/css/plugins/slick.css">
+    <link rel="stylesheet" href="~/assets/css/plugins/animate.css">
+    <link rel="stylesheet" href="~/assets/css/plugins/jquery-ui.min.css">
+    <link rel="stylesheet" href="~/assets/css/plugins/default.css">
+
+    <!--====== Main Style CSS ======-->
+    <link rel="stylesheet" href="~/assets/css/style.css">
+</head>
+<body>
+    <!--====== PRELOADER PART START ======-->
+    <div id="preloader">
+        <div class="preloader">
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <!--====== PRELOADER PART ENDS ======-->
+
+    <!--====== Header Part Start ======-->
+    <header class="header-area">
+        <div class="desktop-nav d-none d-lg-block">
+            <div class="header-nav">
+                <div class="container-fluid custom-container">
+                    <div class="header-nav-wrapper d-flex justify-content-between">
+                        <div class="header-static-nav">
+                            <p>@Html.Raw(settings["PromoCode"])</p>
+                        </div>
+                        <div class="header-menu-nav">
+                            <ul class="menu-nav">
+                                <li><a href="compare.html"><i class="fal fa-repeat"></i> Compare (0)</a></li>
+                                <li><a href="wishlist.html"><i class="fal fa-heart"></i> Wishlist(0)</a></li>
+                                <li>
+                                    <div class="dropdown">
+                                        <button type="button" id="setting" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Setting <i class="icon ion-chevron-down"></i></button>
+                                        <ul class="dropdown-menu" aria-labelledby="setting">
+                                            <li><a href="my-account.html">My account</a></li>
+                                            <li><a href="checkout.html">Checkout</a></li>
+                                            <li><a href="login.html">Sign in</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown">
+                                        <button type="button" id="currency" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">USD $ <i class="icon ion-chevron-down"></i></button>
+
+                                        <ul class="dropdown-menu" aria-labelledby="currency">
+                                            <li><a href="#">EUR €</a></li>
+                                            <li><a href="#">USD $</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown">
+                                        <button type="button" id="langue" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="~/assets/images/flag/1.jpg" alt=""> English <i class="icon ion-chevron-down"></i></button>
+
+                                        <ul class="dropdown-menu" aria-labelledby="langue">
+                                            <li><a href="#"><img src="~/assets/images/flag/1.jpg" alt=""> English</a></li>
+                                            <li><a href="#"><img src="~/assets/images/flag/2.jpg" alt=""> Français</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div> <!-- header menu nav -->
+                    </div> <!-- header nav wrapper -->
+                </div> <!-- container -->
+            </div> <!-- header nav -->
+            <div class="header-middle">
+                <div class="container-fluid custom-container">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="header-logo-contact d-flex  ">
+                                <div class="desktop-logo">
+                                    <a asp-controller="Home" asp-action="Index"><img src="~/assets/images/@settings["Logo"]" alt="Logo"></a>
+                                </div> <!-- desktop logo -->
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="header-search-cart  d-flex align-items-center">
+                                <div class="header-contact d-flex align-items-center">
+                                    <i class="icon ion-ios-telephone-outline"></i>
+                                    <div class="phone media-body">
+                                        <p>24/7 Support</p>
+                                        <a href="tel:@settings["Support"]">@settings["Support"]</a>
+                                    </div>
+                                </div>
+                                <div class="header-search media-body">
+                                    <form>
+                                        <div class="search-category">
+                                            <select id="categoryId">
+                                                <option value="0">All categories</option>
+                                                @foreach(Category main in categories)
+                                                {
+                                                    <option value="@main.Id">@main.Name</option>
+                                                    @if(main.Children != null && main.Children.Count() > 0)
+                                                    {
+                                                        foreach(Category child in main.Children)
+                                                        {
+                                                            <option value="@child.Id">- - @child.Name</option>
+                                                        }
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <input id="searchInput" type="text" placeholder="Enter your search key ... ">
+                                    </form>
+                                    <ul id="searchBody" style="position:absolute; z-index:999; width:100%; background-color:#fff; max-height:250px; overflow-y:scroll;"></ul>
+                                </div>
+                                <div class="header-cart">
+                                    @await Html.PartialAsync("_BasketPartial", basketVMs)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-menu">
+                <div class="container-fluid custom-container">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="header-menu-vertical">
+                                <h4 class="menu-title">
+                                    <span>Shop by</span>
+                                    Department
+                                </h4>
+                                <ul class="menu-content menu-expand">
+                                    <li class="menu-item">
+                                        <a href="#">Laptop <i class="fal fa-chevron-right"></i></a>
+                                        <ul class="sub-menu flex-wrap">
+                                            <li>
+                                                <a href="#"><span>Hot Categories</span></a>
+                                                <ul class="submenu-item ">
+                                                    <li><a href="shop-left-sidebar.html">Dresses</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Jackets & Coats</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Sweaters</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Jeans</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Blouses & Shirts</a></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#"><span>Outerwear & Jackets</span></a>
+                                                <ul class="submenu-item ">
+                                                    <li><a href="shop-left-sidebar.html">Basic Jackets</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Real Fur</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Down Coats</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Blazers</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Trench Coats </a></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <img src="~/assets/images/banner-image.png" alt="">
+                                            </li>
+                                        </ul> <!-- sub menu -->
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="#">Computer <i class="fal fa-chevron-right"></i></a>
+                                        <ul class="sub-menu flex-wrap">
+                                            <li>
+                                                <a href="#"><span>Accessories & Parts</span></a>
+                                                <ul class="submenu-item ">
+                                                    <li><a href="shop-left-sidebar.html">Cables & Adapters</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Batteries</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Chargers</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Bags & Cases</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Electronic Cigarettes</a></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#"><span>Audio & Video</span></a>
+                                                <ul class="submenu-item ">
+                                                    <li><a href="shop-left-sidebar.html">Televisions</a></li>
+                                                    <li><a href="shop-left-sidebar.html">TV Receivers</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Projectors</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Audio Amplifier Boards</a></li>
+                                                    <li><a href="shop-left-sidebar.html">TV Sticks </a></li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="#"><span>Camera & Photo</span></a>
+                                                <ul class="submenu-item ">
+                                                    <li><a href="shop-left-sidebar.html">Digital Cameras</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Camcorders</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Camera Drones</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Action Cameras</a></li>
+                                                    <li><a href="shop-left-sidebar.html">Photo Studio Supplies </a></li>
+                                                </ul>
+                                            </li>
+                                        </ul> <!-- sub menu -->
+                                    </li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Smartphone</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Game Consoles</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Mp3 & headphone</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Tv & Video</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Watches</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Watches</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Washing Machine</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Camera</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Audio & Theater</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Accessories</a></li>
+                                    <li class="menu-item"><a href="shop-left-sidebar.html">Games & Consoles</a></li>
+                                </ul> <!-- menu content -->
+                            </div> <!-- header menu vertical -->
+                        </div>
+
+                        <div class="col-lg-9 position-static">
+                            <div class="header-horizontal-menu">
+                                <ul class="menu-content">
+                                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                                    <li><a asp-controller="About" asp-action="Index">About</a></li>
+                                    <li><a asp-controller="Product" asp-action="Index">Shop</a></li>
+                                    <li><a asp-controller="Blog" asp-action="Index">Blog</a></li>
+                                    <li><a asp-controller="Contact" asp-action="Index">Contact</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-nav d-lg-none">
+            <div class="container-fluid">
+                <div class="mobile-nav-top">
+                    <div class="row align-items-center">
+                        <div class="col-sm-4 col-3">
+                            <div class="mobile-toggle">
+                                <a class="mobile-menu-open" href="javascript:;"><i class="fal fa-bars"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-5">
+                            <div class="mobile-logo text-center">
+                                <a asp-controller="Home" asp-action="Index"><img src="~/assets/images/@settings["Logo"]" alt="Logo"></a>
+                            </div> <!-- mobile logo -->
+                        </div>
+                        <div class="col-sm-4  col-4">
+                            <div class="mobile-account-cart">
+                                <ul class="account-cart text-right">
+                                    <li>
+                                        <div class="dropdown">
+                                            <button type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fal fa-user"></i></button>
+
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <li><a href="#">My account</a></li>
+                                                <li><a href="#">Checkout</a></li>
+                                                <li><a href="#">Sign in</a></li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="header-cart">
+                                        <a href="#">
+                                            <i class="fal fa-shopping-cart"></i>
+                                            <span>0</span>
+                                        </a>
+                                        <div class="mini-cart">
+                                            <ul class="cart-items">
+                                                <li>
+                                                    <div class="single-cart-item d-flex">
+                                                        <div class="cart-item-thumb">
+                                                            <a href="single-product.html"><img src="~/assets/images/product-cart/cart-1.jpg" alt="product"></a>
+                                                            <span class="product-quantity">1x</span>
+                                                        </div>
+                                                        <div class="cart-item-content media-body">
+                                                            <h5 class="product-name"><a href="single-product.html">New Balance Fresh Foam LAZR</a></h5>
+                                                            <span class="product-price">€18.90</span>
+                                                            <span class="product-color"><strong>Color:</strong> White</span>
+                                                            <a href="#" class="product-close"><i class="fal fa-times"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="single-cart-item d-flex">
+                                                        <div class="cart-item-thumb">
+                                                            <a href="single-product.html"><img src="~/assets/images/product-cart/cart-2.jpg" alt="product"></a>
+                                                            <span class="product-quantity">3x</span>
+                                                        </div>
+                                                        <div class="cart-item-content media-body">
+                                                            <h5 class="product-name"><a href="single-product.html">New Balance Fresh Foam LAZR</a></h5>
+                                                            <span class="product-price">€18.90</span>
+                                                            <span class="product-color"><strong>Color:</strong> White</span>
+                                                            <a href="#" class="product-close"><i class="fal fa-times"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <div class="price_content">
+                                                <div class="cart-subtotals">
+                                                    <div class="products price_inline">
+                                                        <span class="label">Subtotal</span>
+                                                        <span class="value">€30.80</span>
+                                                    </div>
+                                                    <div class="shipping price_inline">
+                                                        <span class="label">Shipping</span>
+                                                        <span class="value">€7.00</span>
+                                                    </div>
+                                                    <div class="tax price_inline">
+                                                        <span class="label">Taxes</span>
+                                                        <span class="value">€0.00</span>
+                                                    </div>
+                                                </div>
+                                                <div class="cart-total price_inline">
+                                                    <span class="label">Total</span>
+                                                    <span class="value">€37.80</span>
+                                                </div>
+                                            </div> <!-- price content -->
+                                            <div class="checkout text-center">
+                                                <a href="checkout.html" class="main-btn">Checkout</a>
+                                            </div>
+                                        </div> <!-- mini cart -->
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div> <!-- row -->
+                </div> <!-- mobile nav top -->
+
+                <div class="header-search">
+                    <form action="#">
+                        <div class="search-category">
+                            <select>
+                                <option value="0">All categories</option>
+                                @foreach (Category main in categories)
+                                {
+                                    <option value="@main.Id">@main.Name</option>
+                                    @if (main.Children != null && main.Children.Count() > 0)
+                                    {
+                                        foreach (Category child in main.Children)
+                                        {
+                                            <option value="@child.Id">- - @child.Name</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <input type="text" placeholder="Enter your search key ... ">
+                        <button><i class="icon ion-android-search"></i></button>
+                    </form>
+                </div>
+            </div> <!-- container -->
+
+            <div class="mobile-off-canvas-menu">
+                <div class="mobile-canvas-menu-top">
+                    <ul class="menu-nav">
+                        <li><a href="compare.html"><i class="fal fa-repeat"></i> Compare (0)</a></li>
+                        <li><a href="wishlist.html"><i class="fal fa-heart"></i> Wishlist(0)</a></li>
+                    </ul>
+                    <ul class="mobile-canvas">
+                        <li>
+                            <div class="dropdown dropdown-mobile menu-item-has-children">
+                                <button class="dm-toggle" type="button">USD $ <i class="icon ion-chevron-down"></i></button>
+
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">EUR €</a></li>
+                                    <li><a href="#">USD $</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="dropdown dropdown-mobile menu-item-has-children">
+                                <button class="dm-toggle" type="button"><img src="~/assets/images/flag/1.jpg" alt=""> English <i class="icon ion-chevron-down"></i></button>
+
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><img src="~/assets/images/flag/1.jpg" alt=""> English</a></li>
+                                    <li><a href="#"><img src="~/assets/images/flag/2.jpg" alt=""> Français</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div> <!-- mobile canvas menu -->
+
+                <div class="mobile-canvas-close close-mobile-menu">
+                    <p>Menu <i class="fal fa-arrow-left"></i></p>
+                </div>
+
+                <div class="mobile-main-menu">
+                    <ul class="menu-content">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="About" asp-action="Index">About</a></li>
+                        <li><a asp-controller="Product" asp-action="Index">Shop</a></li>
+                        <li><a asp-controller="Blog" asp-action="Index">Blog</a></li>
+                        <li><a asp-controller="Contact" asp-action="Index">Contact</a></li>
+                    </ul>
+
+                    <ul class="menu-content">
+                        <li class="menu-item-has-children">
+                            <a href="#">Laptop <i class="fal fa-chevron-right"></i></a>
+                            <ul class="sub-menu">
+                                <li class="menu-item-has-children">
+                                    <a href="#"><span>Hot Categories</span></a>
+                                    <ul class="submenu-item ">
+                                        <li><a href="shop-left-sidebar.html">Dresses</a></li>
+                                        <li><a href="shop-left-sidebar.html">Jackets & Coats</a></li>
+                                        <li><a href="shop-left-sidebar.html">Sweaters</a></li>
+                                        <li><a href="shop-left-sidebar.html">Jeans</a></li>
+                                        <li><a href="shop-left-sidebar.html">Blouses & Shirts</a></li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a href="#"><span>Outerwear & Jackets</span></a>
+                                    <ul class="submenu-item ">
+                                        <li><a href="shop-left-sidebar.html">Basic Jackets</a></li>
+                                        <li><a href="shop-left-sidebar.html">Real Fur</a></li>
+                                        <li><a href="shop-left-sidebar.html">Down Coats</a></li>
+                                        <li><a href="shop-left-sidebar.html">Blazers</a></li>
+                                        <li><a href="shop-left-sidebar.html">Trench Coats </a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <img src="~/assets/images/banner-image.png" alt="">
+                                </li>
+                            </ul> <!-- sub menu -->
+                        </li>
+                        <li class="menu-item-has-children">
+                            <a href="#">Computer <i class="fal fa-chevron-right"></i></a>
+                            <ul class="sub-menu">
+                                <li class="menu-item-has-children">
+                                    <a href="#"><span>Accessories & Parts</span></a>
+                                    <ul class="submenu-item">
+                                        <li><a href="shop-left-sidebar.html">Cables & Adapters</a></li>
+                                        <li><a href="shop-left-sidebar.html">Batteries</a></li>
+                                        <li><a href="shop-left-sidebar.html">Chargers</a></li>
+                                        <li><a href="shop-left-sidebar.html">Bags & Cases</a></li>
+                                        <li><a href="shop-left-sidebar.html">Electronic Cigarettes</a></li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a href="#"><span>Audio & Video</span></a>
+                                    <ul class="submenu-item ">
+                                        <li><a href="shop-left-sidebar.html">Televisions</a></li>
+                                        <li><a href="shop-left-sidebar.html">TV Receivers</a></li>
+                                        <li><a href="shop-left-sidebar.html">Projectors</a></li>
+                                        <li><a href="shop-left-sidebar.html">Audio Amplifier Boards</a></li>
+                                        <li><a href="shop-left-sidebar.html">TV Sticks </a></li>
+                                    </ul>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a href="#"><span>Camera & Photo</span></a>
+                                    <ul class="submenu-item ">
+                                        <li><a href="shop-left-sidebar.html">Digital Cameras</a></li>
+                                        <li><a href="shop-left-sidebar.html">Camcorders</a></li>
+                                        <li><a href="shop-left-sidebar.html">Camera Drones</a></li>
+                                        <li><a href="shop-left-sidebar.html">Action Cameras</a></li>
+                                        <li><a href="shop-left-sidebar.html">Photo Studio Supplies </a></li>
+                                    </ul>
+                                </li>
+                            </ul> <!-- sub menu -->
+                        </li>
+                        <li><a href="shop-left-sidebar.html">Smartphone</a></li>
+                        <li><a href="shop-left-sidebar.html">Game Consoles</a></li>
+                        <li><a href="shop-left-sidebar.html">Mp3 & headphone</a></li>
+                        <li><a href="shop-left-sidebar.html">Tv & Video</a></li>
+                        <li><a href="shop-left-sidebar.html">Watches</a></li>
+                        <li><a href="shop-left-sidebar.html">Watches</a></li>
+                        <li><a href="shop-left-sidebar.html">Washing Machine</a></li>
+                        <li><a href="shop-left-sidebar.html">Camera</a></li>
+                        <li><a href="shop-left-sidebar.html">Audio & Theater</a></li>
+                        <li><a href="shop-left-sidebar.html">Accessories</a></li>
+                        <li><a href="shop-left-sidebar.html">Games & Consoles</a></li>
+                    </ul> <!-- menu content -->
+                </div> <!-- mobile main menu -->
+            </div> <!-- mobile off canvas menu -->
+            <div class="overlay"></div>
+        </div>
+    </header>
+    <!--====== Header Part Ends ======-->
+
+    @RenderBody()
+
+    <!--====== Brand Part Start ======-->
+    <div class="brand-area pt-80">
+        <div class="container-fluid custom-container">
+            <div class="row brand-active">
+                <div class="col-lg-2">
+                    <div class="single-brand">
+                        <a href="#">
+                            <img src="assets/images/brand/brand-1.jpg" alt="brand">
+                        </a>
+                    </div> <!-- single brand -->
+                </div>
+                <div class="col-lg-2">
+                    <div class="single-brand">
+                        <a href="#">
+                            <img src="assets/images/brand/brand-2.jpg" alt="brand">
+                        </a>
+                    </div> <!-- single brand -->
+                </div>
+                <div class="col-lg-2">
+                    <div class="single-brand">
+                        <a href="#">
+                            <img src="assets/images/brand/brand-3.jpg" alt="brand">
+                        </a>
+                    </div> <!-- single brand -->
+                </div>
+                <div class="col-lg-2">
+                    <div class="single-brand">
+                        <a href="#">
+                            <img src="assets/images/brand/brand-4.jpg" alt="brand">
+                        </a>
+                    </div> <!-- single brand -->
+                </div>
+                <div class="col-lg-2">
+                    <div class="single-brand">
+                        <a href="#">
+                            <img src="assets/images/brand/brand-5.jpg" alt="brand">
+                        </a>
+                    </div> <!-- single brand -->
+                </div>
+                <div class="col-lg-2">
+                    <div class="single-brand">
+                        <a href="#">
+                            <img src="assets/images/brand/brand-6.jpg" alt="brand">
+                        </a>
+                    </div> <!-- single brand -->
+                </div>
+                <div class="col-lg-2">
+                    <div class="single-brand">
+                        <a href="#">
+                            <img src="assets/images/brand/brand-4.jpg" alt="brand">
+                        </a>
+                    </div> <!-- single brand -->
+                </div>
+            </div> <!-- row -->
+        </div> <!-- container -->
+    </div>
+    <!--====== Brand Part Ends ======-->
+
+    <!--====== Features Banner Part Start ======-->
+    <section class="features-banner-area pt-80 pb-100">
+        <div class="container-fluid custom-container">
+            <div class="features-banner-wrapper d-flex flex-wrap">
+                <div class="single-features-banner d-flex">
+                    <div class="banner-icon">
+                        <img src="assets/images/banner-icon/icon1.png" alt="Icon">
+                    </div>
+                    <div class="banner-content media-body">
+                        <h3 class="banner-title">Free Shipping</h3>
+                        <p>Free shipping on all US order</p>
+                    </div>
+                </div> <!-- single features banner -->
+                <div class="single-features-banner d-flex">
+                    <div class="banner-icon">
+                        <img src="assets/images/banner-icon/icon2.png" alt="Icon">
+                    </div>
+                    <div class="banner-content media-body">
+                        <h3 class="banner-title">Support 24/7</h3>
+                        <p>Contact us 24 hours a day</p>
+                    </div>
+                </div> <!-- single features banner -->
+                <div class="single-features-banner d-flex">
+                    <div class="banner-icon">
+                        <img src="assets/images/banner-icon/icon3.png" alt="Icon">
+                    </div>
+                    <div class="banner-content media-body">
+                        <h3 class="banner-title">100% Money Back</h3>
+                        <p>You have 30 days to Return</p>
+                    </div>
+                </div> <!-- single features banner -->
+                <div class="single-features-banner d-flex">
+                    <div class="banner-icon">
+                        <img src="assets/images/banner-icon/icon4.png" alt="Icon">
+                    </div>
+                    <div class="banner-content media-body">
+                        <h3 class="banner-title">90 Days Return</h3>
+                        <p>If goods have problems</p>
+                    </div>
+                </div> <!-- single features banner -->
+                <div class="single-features-banner d-flex">
+                    <div class="banner-icon">
+                        <img src="assets/images/banner-icon/icon5.png" alt="Icon">
+                    </div>
+                    <div class="banner-content media-body">
+                        <h3 class="banner-title">Payment Secure</h3>
+                        <p>We ensure secure payment</p>
+                    </div>
+                </div> <!-- single features banner -->
+            </div> <!-- features banner wrapper -->
+        </div> <!-- container -->
+    </section>
+    <!--====== Features Banner Part Ends ======-->
+
+    <!--====== Newsletter Part Start ======-->
+    <section class="newsletter-area pt-100 pb-100 bg_cover" style="background-image: url(assets/images/bg-newletter.jpg)">
+        <div class="container">
+            <div class="row justify-content-end">
+                <div class="col-lg-8">
+                    <div class="newsletter-content">
+                        <h2 class="newsletter-title">Subscribe our newsletter</h2>
+                        <p>allup is a powerful eCommerce HTML Template</p>
+
+                        <div class="newsletter-forn">
+                            <form action="#">
+                                <input type="text" placeholder="Your Email address">
+                                <button class="main-btn">Subscribe</button>
+                            </form>
+                        </div>
+                    </div> <!-- newsletter content -->
+                </div>
+            </div> <!-- row -->
+        </div> <!-- container -->
+    </section>
+    <!--====== Newsletter Part Ends ======-->
+
+    <!--====== Footer Part Start ======-->
+    <section class="footer-area bg_cover" style="background-image: url(assets/images/bg-footer.jpg)">
+        <div class="footer-widget pt-30 pb-70">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="footer-contact mt-50">
+                            <h4 class="footer-title">Contact Details</h4>
+
+                            <ul>
+                                <li><i class="fas fa-map-marker-alt"></i>@settings["Address"]</li>
+                                <li><i class="fas fa-phone"></i><a href="tel:@settings["Phone"]">@settings["Phone"]</a></li>
+                                <li><i class="fas fa-envelope"></i><a href="mailto://@settings["E-mail"]">@settings["E-mail"]</a></li>
+                                <li><i class="far fa-clock"></i>@settings["WorkHours"]</li>
+                            </ul>
+                        </div> <!-- footer contact -->
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="footer-link-wrapper d-flex flex-wrap justify-content-between">
+                            <div class="footer-link mt-50">
+                                <h4 class="footer-title">Information</h4>
+                                <ul class="link">
+                                    <li><a href="#">Delivery</a></li>
+                                    <li><a href="#">Legal Notice</a></li>
+                                    <li><a href="about.html">About us</a></li>
+                                    <li><a href="#">Secure payment</a></li>
+                                    <li><a href="contact.html">Contact us</a></li>
+                                </ul>
+                            </div> <!-- footer link -->
+                            <div class="footer-link mt-50">
+                                <h4 class="footer-title">Customer</h4>
+                                <ul class="link">
+                                    <li><a href="shop-4-column.html">Prices drop</a></li>
+                                    <li><a href="shop-4-column.html">New Product</a></li>
+                                    <li><a href="shop-3-column.html">Best Sales</a></li>
+                                    <li><a href="#">Sitemap</a></li>
+                                    <li><a href="login.html">Login</a></li>
+                                </ul>
+                            </div> <!-- footer link -->
+                            <div class="footer-link mt-50">
+                                <h4 class="footer-title">About Us</h4>
+                                <ul class="link">
+                                    <li><a href="#">About Our Shop</a></li>
+                                    <li><a href="#">Secure Shopping </a></li>
+                                    <li><a href="#">Delivery infomation </a></li>
+                                    <li><a href="#">Store Locations </a></li>
+                                    <li><a href="#">Affiliates </a></li>
+                                </ul>
+                            </div> <!-- footer link -->
+                            <div class="footer-link mt-50">
+                                <h4 class="footer-title">My account</h4>
+                                <ul class="link">
+                                    <li><a href="#">Personal info</a></li>
+                                    <li><a href="#">Order</a></li>
+                                    <li><a href="#">Credit Slips</a></li>
+                                    <li><a href="#">Address</a></li>
+                                </ul>
+                            </div> <!-- footer link -->
+                        </div> <!-- footer link wrapper -->
+                    </div>
+                </div> <!-- row -->
+            </div> <!-- container -->
+        </div> <!-- footer widget -->
+
+        <div class="footer-copyright">
+            <div class="container">
+                <div class="footer-copyright-payment text-center d-lg-flex justify-content-between align-items-center">
+                    <div class="copyright-text">
+                        <p>Copyright 2020 &copy; <a href="https://hasthemes.com/">HasThemes</a> . All Rights Reserved</p>
+                    </div>
+                    <div class="payment">
+                        <img src="~/assets/images/payment.png" alt="payment">
+                    </div>
+                </div> <!-- footer copyright payment -->
+            </div> <!-- container -->
+        </div> <!-- footer copyright -->
+    </section>
+    <!--====== Footer Part Ends ======-->
+
+    <!--====== Quick View Part Start ======-->
+    <div class="modal fade " id="productQuickModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+    <!--====== Quick View Part Ends ======-->
+
+    <!--====== BACK TO TOP PART START ======-->
+    <a href="#" class="back-to-top"><i class="ion-android-arrow-up"></i></a>
+    <!--====== BACK TO TOP PART ENDS ======-->
+
+
+    <!--====== Vendors js ======-->
+    <script src="~/assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="~/assets/js/vendor/modernizr-3.7.1.min.js"></script>
+
+    <!--====== Plugins js ======-->
+    <script src="~/assets/js/plugins/popper.min.js"></script>
+    <script src="~/assets/js/plugins/bootstrap.min.js"></script>
+    <script src="~/assets/js/plugins/slick.min.js"></script>
+    <script src="~/assets/js/plugins/jquery.countdown.min.js"></script>
+    <script src="~/assets/js/plugins/jquery-ui.min.js"></script>
+        
+    <!--====== Main Activation js ======-->
+    <script src="~/assets/js/main.js"></script>
+    <script src="~/assets/js/custom.js"></script>
+</body>
+</html>
